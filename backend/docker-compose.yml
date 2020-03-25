@@ -1,0 +1,33 @@
+version: '3.1'
+networks:
+  app-tier:
+    driver: bridge
+services:
+  sodam-db:
+    image: mysql
+    ports:
+      - 3307:3306
+    container_name: sodam-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=sodam
+      - MYSQL_USER=sodam
+      - MYSQL_PASSWORD=sodam
+      - MYSQL_DATABASE=sodam
+    expose:
+      - '3306'
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: sodam-backend
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./:/usr/src/app
+    expose:
+      - '5000'
+    links:
+      - sodam-db
+    depends_on:
+      - sodam-db
+    restart: always
